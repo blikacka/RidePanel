@@ -1,0 +1,73 @@
+<resources>
+    <string name="tab_home">Domov</string>
+    <string name="tab_logs">Logy</string>
+    <string name="tab_faq">Pomoc</string>
+
+    <string name="status_listening">Počúva na %1$s:%2$d</string>
+    <string name="btn_qr">Naskenovať QR a pripojiť</string>
+    <string name="qr_idle">QR/P2P: nečinné</string>
+    <string name="qr_status_prefix">QR/P2P: %1$s</string>
+    <string name="known_devices_label">Uložené head-unity</string>
+    <string name="btn_known_connect">Pripojiť</string>
+    <string name="btn_known_connected">Pripojené</string>
+    <string name="btn_known_forget">Zabudnúť</string>
+    <string name="btn_start_mirror">Spustiť zrkadlenie</string>
+    <string name="btn_open_maps">Otvoriť Google Mapy (na šírku)</string>
+    <string name="btn_stop_mirror">Ukončiť zrkadlenie</string>
+
+    <string name="logs_title">Logy</string>
+    <string name="btn_clear_logs">Vymazať</string>
+
+    <string name="toast_write_settings_needed">RidePanel potrebuje oprávnenie Modify-System-Settings pre uzamknutie na šírku — povoľ a skús znova</string>
+    <string name="toast_landscape_lock_failed">Nepodarilo sa uzamknúť na šírku — Mapy sa môžu samy otáčať</string>
+    <string name="toast_maps_not_installed">Mapy nie sú nainštalované?</string>
+    <string name="dialog_hotspot_title">Údaje hotspotu</string>
+    <string name="dialog_hotspot_message">Head-unit sa chce pripojiť na hotspot telefónu.</string>
+    <string name="dialog_hotspot_ssid_hint">SSID hotspotu</string>
+    <string name="dialog_hotspot_password_hint">Heslo hotspotu</string>
+    <string name="dialog_pick_headunit_title">Vyber head-unit</string>
+    <string name="dialog_unnamed_device">(bez názvu)</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Zrušiť</string>
+    <string name="crash_prefix">PÁD %1$s: %2$s</string>
+
+    <string name="faq_title">Pomoc</string>
+    <string name="btn_buy_coffee">☕ Kúp mi kávu</string>
+    <string name="faq_body">
+▸ Čo je RidePanel?\n
+Bezplatná open-source aplikácia na zrkadlenie obrazu telefónu na motocyklový head-unit Carbit SSDQ01 (flavor 51). Komunitná alternatíva k pôvodnej Carbit Ride aplikácii bez závislosti na cloud účte — všetko beží lokálne cez Wi-Fi Direct.\n\n
+▸ Ako začať?\n
+1. Stlač **horné tlačidlo** na ľavej ovládacej jednotke pri riadidlách motorky — na displeji head-unitu sa zobrazí QR kód.\n
+2. V RidePanel klikni „Naskenovať QR a pripojiť“ → naskenuj QR → telefón sa pripojí na Wi-Fi Direct head-unitu.\n
+3. Na head-unite sa objaví splash „pripojené“, čo znamená že telefón je spárovaný.\n
+4. Klikni „Spustiť zrkadlenie“ (iba zdieľanie obrazu) ALEBO „Otvoriť Google Mapy (na šírku)“ (zdieľanie + Mapy v jednom kroku).\n
+5. Na ukončenie: „Ukončiť zrkadlenie“.\n\n
+▸ Ako to funguje?\n
+Aplikácia reverse-engineeruje Carbit EasyConn (PXC) protokol. Wi-Fi Direct slúži ako transport, mDNS discovery oznamuje head-unit, potom PXC handshake (CLIENT_INFO / capability exchange) otvorí štyri TCP sockety (10920/10921/10922/10711–10710). Telefón kóduje obrazovku cez MediaCodec do H.264 v natívnom rozlíšení head-unitu 800×480 a streamuje to cez tieto sockety. GLES letterbox pipeline zaisťuje správny pomer strán bez ohľadu na orientáciu telefónu.\n\n
+▸ Všetky funkcie\n
+• Wi-Fi Direct + mDNS auto-discovery spárovaných head-unitov\n
+• Zoznam uložených head-unitov — jeden klik pre opätovné pripojenie po prvom QR scane\n
+• Splash „pripojené“ na head-unite pred začatím zdieľania obrazu\n
+• Systémový zámok na šírku, aby Mapy zostali v landscape bez ohľadu na orientáciu telefónu (vyžaduje Modify-System-Settings)\n
+• GLES letterbox pipeline — obraz so správnym pomerom strán s čiernymi pruhmi, žiadne naťahovanie\n
+• Handling auto-rotácie: pipeline sa otočí keď sa mení orientácia zdrojového telefónu\n
+• Bitrate / fps / GOP odladené pre stabilitu Wi-Fi P2P (4 Mbps, 30 fps, 2 s I-frame interval)\n
+• Jednoklikové spustenie Google Máp na šírku\n
+• Živý log v aplikácii pre diagnostiku\n
+• Viacjazyčnosť: English, Čeština, Slovenčina, Polski, Deutsch\n\n
+▸ Prečo chce aplikácia „Modify system settings“?\n
+Aby uzamkla orientáciu celého telefónu na šírku — bez toho by sa Mapy po naklonení do portrait otočili a head-unit by dostal rotovaný stream. Povolenie vyžaduje jednorazové schválenie v systémových nastaveniach (Android dialóg sa otvorí po prvom kliknutí na tlačidlo Máp).\n\n
+▸ Po zastavení obraz zostáva na šírku, čo s tým?\n
+Tlačidlo Stop vráti auto-rotáciu na pôvodnú hodnotu. Ak je zaseknuté → otvor rýchle nastavenia Androidu a prepni rotation lock ručne.\n\n
+▸ Aký head-unit je podporovaný?\n
+Carbit SSDQ01-0120 (Carbit Ride motocykle/skútre, flavor 51, displej 5\" 800×480). Auto Carbit nebol testovaný — protokol je z ~90 % identický, ale RLY odpovede sa môžu líšiť.\n\n
+▸ Známe obmedzenia\n
+• Head-unit má `supportScreenTouch=false` → touch z HU späť do telefónu nefunguje, ovládanie musíš robiť priamo na telefóne.\n
+• OTA update cez Carbit cloud nie je podporovaný — head-unit ho vyžaduje pri handshake, my odpovedáme isOk=false.\n
+• Štatistiky o jazde (`HUDINFO`) sa posielajú s placeholder hodnotami, nie reálnymi GPS dátami.\n\n
+▸ Cena\n
+RidePanel je **úplne zdarma** a vždy zdarma zostane. Žiadne reklamy, žiadne premium, žiadna telemetria, žiadne analytics. Ak ti aplikácia pomohla, káva nižšie prispeje na čas venovaný vývoju.\n\n
+▸ Open source &amp; licencia\n
+Kompletný zdrojový kód je publikovaný pod **MIT licenciou**: ktokoľvek môže používať, upravovať a redistribuovať — aj komerčne — pokiaľ zachová autorstvo. MIT licencia výslovne nezaručuje funkčnosť: softvér je poskytovaný „TAK AKO JE“, autori neručia za škody. Používaním RidePanel s týmito podmienkami súhlasíš.
+    </string>
+</resources>

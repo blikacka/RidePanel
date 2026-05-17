@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Adaptive launcher icon background — the same blue the icon's
+         gradient is rooted in so the icon and its background blend. -->
+    <color name="ic_launcher_background">#0B3A75</color>
+</resources>

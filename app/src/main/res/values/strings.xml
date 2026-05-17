@@ -1,0 +1,81 @@
+<resources>
+    <!-- App name — never translated. -->
+    <string name="app_name" translatable="false">RidePanel</string>
+
+    <!-- ─── Tab labels (content descriptions) ──────────────────────── -->
+    <string name="tab_home">Home</string>
+    <string name="tab_logs">Logs</string>
+    <string name="tab_faq">FAQ</string>
+
+    <!-- ─── Home tab ───────────────────────────────────────────────── -->
+    <string name="status_listening">Listening on %1$s:%2$d</string>
+    <string name="btn_qr">Scan QR &amp; connect</string>
+    <string name="qr_idle">QR/P2P: idle</string>
+    <string name="qr_status_prefix">QR/P2P: %1$s</string>
+    <string name="known_devices_label">Saved head-units</string>
+    <string name="btn_known_connect">Connect</string>
+    <string name="btn_known_connected">Connected</string>
+    <string name="btn_known_forget">Forget</string>
+    <string name="btn_start_mirror">Start mirror</string>
+    <string name="btn_open_maps">Open Google Maps (landscape)</string>
+    <string name="btn_stop_mirror">Stop mirror</string>
+
+    <!-- ─── Logs tab ───────────────────────────────────────────────── -->
+    <string name="logs_title">Logs</string>
+    <string name="btn_clear_logs">Clear</string>
+
+    <!-- ─── User-facing toasts / dialogs ───────────────────────────── -->
+    <string name="toast_write_settings_needed">RidePanel needs Modify-System-Settings to lock landscape — grant and retry</string>
+    <string name="toast_landscape_lock_failed">Couldn\'t lock landscape — Maps may auto-rotate</string>
+    <string name="toast_maps_not_installed">Maps not installed?</string>
+    <string name="dialog_hotspot_title">Hotspot credentials</string>
+    <string name="dialog_hotspot_message">Head-unit wants to join your phone\'s hotspot.</string>
+    <string name="dialog_hotspot_ssid_hint">Hotspot SSID</string>
+    <string name="dialog_hotspot_password_hint">Hotspot password</string>
+    <string name="dialog_pick_headunit_title">Pick head-unit</string>
+    <string name="dialog_unnamed_device">(unnamed)</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="crash_prefix">CRASH %1$s: %2$s</string>
+
+    <!-- ─── FAQ tab ────────────────────────────────────────────────── -->
+    <string name="faq_title">FAQ</string>
+    <string name="btn_buy_coffee">☕ Buy me a coffee</string>
+    <string name="faq_body">
+▸ What is RidePanel?\n
+A free, open-source app for mirroring your phone screen onto a Carbit SSDQ01 motorcycle head-unit (flavor 51). A community-built alternative to the original Carbit Ride app without the cloud-account dependency — everything runs locally over Wi-Fi Direct.\n\n
+▸ How do I get started?\n
+1. Press the **top button** on the motorcycle\'s left handlebar control to bring up the QR code on the head-unit display.\n
+2. In RidePanel tap “Scan QR &amp; connect” → scan that QR → the phone joins the head-unit\'s Wi-Fi Direct network.\n
+3. The “RidePanel connected” splash will appear on the head-unit, indicating the phone is paired.\n
+4. Tap “Start mirror” (just screen sharing) OR “Open Google Maps (landscape)” (sharing + Maps in one step).\n
+5. To end the session: “Stop mirror”.\n\n
+▸ How does it work?\n
+The app reverse-engineers the Carbit EasyConn (PXC) protocol. Wi-Fi Direct provides the transport, mDNS discovery announces the head-unit, then a PXC handshake (CLIENT_INFO / capability exchange) opens four TCP sockets (10920/10921/10922/10711–10710). The phone encodes the screen as H.264 via MediaCodec into the head-unit\'s native 800×480 resolution and streams it over those sockets. A GLES letterbox pipeline ensures correct aspect ratio regardless of phone orientation.\n\n
+▸ All features\n
+• Wi-Fi Direct + mDNS auto-discovery of paired head-units\n
+• Saved head-units list — one-tap reconnect after QR has been scanned once\n
+• Connected-state splash on the head-unit before screen sharing starts\n
+• System-wide landscape lock so Maps stays landscape regardless of phone orientation (requires Modify-System-Settings grant)\n
+• GLES letterbox pipeline — aspect-correct image with black bars, no stretching\n
+• Auto-rotate handling: rotates the encoder pipeline when the source phone orientation changes\n
+• Bitrate / fps / GOP tuned for Wi-Fi P2P stability (4 Mbps, 30 fps, 2 s I-frame interval)\n
+• One-tap Google Maps launch in landscape\n
+• Live in-app log tail for diagnostics\n
+• Multi-language: English, Čeština, Slovenčina, Polski, Deutsch\n\n
+▸ Why does the app ask for “Modify system settings”?\n
+To lock the whole phone into landscape — without it Maps would flip back to portrait when you tilt the phone, and the head-unit would receive a rotated stream. Requires a one-time grant in system settings (Android opens the dialog on first tap of the Maps button).\n\n
+▸ After Stop the screen stays in landscape, what now?\n
+The Stop button restores auto-rotate to its previous value. If it gets stuck → open Android\'s Quick Settings panel and toggle rotation lock manually.\n\n
+▸ Which head-unit is supported?\n
+Carbit SSDQ01-0120 (Carbit Ride motorcycle/scooter, flavor 51, 5\" 800×480 display). Car-grade Carbit hasn\'t been tested — the protocol is ~90% identical but the RLY replies may differ.\n\n
+▸ Known limitations\n
+• Head-unit reports `supportScreenTouch=false` → touch from the HU back to the phone is not supported; interact with the phone directly.\n
+• OTA updates via the Carbit cloud are not supported — we reply isOk=false during handshake.\n
+• Ride statistics (`HUDINFO`) are sent with placeholder values, not real GPS data.\n\n
+▸ Pricing\n
+RidePanel is **completely free** and will always stay that way. There are no ads, no premium tier, no telemetry, no analytics. If you find the app useful, the coffee button below helps fund development time.\n\n
+▸ Open source &amp; license\n
+The full source code is published under the **MIT License**: anyone can use, modify, and redistribute it — even commercially — as long as the copyright notice is preserved. The MIT License explicitly disclaims warranty: the software is provided “AS IS”, the authors are not liable for damages. By using RidePanel you accept these terms.
+    </string>
+</resources>

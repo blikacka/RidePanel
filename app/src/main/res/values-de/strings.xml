@@ -1,0 +1,73 @@
+<resources>
+    <string name="tab_home">Start</string>
+    <string name="tab_logs">Logs</string>
+    <string name="tab_faq">Hilfe</string>
+
+    <string name="status_listening">Lauscht auf %1$s:%2$d</string>
+    <string name="btn_qr">QR scannen &amp; verbinden</string>
+    <string name="qr_idle">QR/P2P: inaktiv</string>
+    <string name="qr_status_prefix">QR/P2P: %1$s</string>
+    <string name="known_devices_label">Gespeicherte Head-Units</string>
+    <string name="btn_known_connect">Verbinden</string>
+    <string name="btn_known_connected">Verbunden</string>
+    <string name="btn_known_forget">Vergessen</string>
+    <string name="btn_start_mirror">Mirror starten</string>
+    <string name="btn_open_maps">Google Maps öffnen (Querformat)</string>
+    <string name="btn_stop_mirror">Mirror stoppen</string>
+
+    <string name="logs_title">Logs</string>
+    <string name="btn_clear_logs">Löschen</string>
+
+    <string name="toast_write_settings_needed">RidePanel benötigt die Modify-System-Settings-Berechtigung zum Sperren auf Querformat — gewähre und versuche es erneut</string>
+    <string name="toast_landscape_lock_failed">Querformat konnte nicht gesperrt werden — Maps kann sich drehen</string>
+    <string name="toast_maps_not_installed">Maps nicht installiert?</string>
+    <string name="dialog_hotspot_title">Hotspot-Zugangsdaten</string>
+    <string name="dialog_hotspot_message">Die Head-Unit möchte sich mit dem Hotspot des Telefons verbinden.</string>
+    <string name="dialog_hotspot_ssid_hint">Hotspot-SSID</string>
+    <string name="dialog_hotspot_password_hint">Hotspot-Passwort</string>
+    <string name="dialog_pick_headunit_title">Head-Unit auswählen</string>
+    <string name="dialog_unnamed_device">(ohne Namen)</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Abbrechen</string>
+    <string name="crash_prefix">ABSTURZ %1$s: %2$s</string>
+
+    <string name="faq_title">Hilfe</string>
+    <string name="btn_buy_coffee">☕ Kauf mir einen Kaffee</string>
+    <string name="faq_body">
+▸ Was ist RidePanel?\n
+Eine kostenlose Open-Source-App zum Spiegeln des Telefonbildschirms auf eine Motorrad-Head-Unit Carbit SSDQ01 (Flavor 51). Eine community-basierte Alternative zur originalen Carbit Ride App ohne Cloud-Account-Abhängigkeit — alles läuft lokal über Wi-Fi Direct.\n\n
+▸ Wie fange ich an?\n
+1. Drücke die **obere Taste** an der linken Lenker-Bedieneinheit des Motorrads — auf dem Display der Head-Unit erscheint ein QR-Code.\n
+2. In RidePanel tippe auf „QR scannen &amp; verbinden“ → scanne den QR → das Telefon verbindet sich per Wi-Fi Direct mit der Head-Unit.\n
+3. Auf der Head-Unit erscheint ein „Verbunden“-Splash, der signalisiert dass das Telefon gekoppelt ist.\n
+4. Tippe auf „Mirror starten“ (nur Bildschirmfreigabe) ODER „Google Maps öffnen (Querformat)“ (Freigabe + Maps in einem Schritt).\n
+5. Zum Beenden: „Mirror stoppen“.\n\n
+▸ Wie funktioniert es?\n
+Die App reverse-engineered das Carbit EasyConn (PXC) Protokoll. Wi-Fi Direct dient als Transport, mDNS-Discovery kündigt die Head-Unit an, dann öffnet der PXC-Handshake (CLIENT_INFO / Capability-Austausch) vier TCP-Sockets (10920/10921/10922/10711–10710). Das Telefon kodiert den Bildschirm über MediaCodec als H.264 in der nativen 800×480-Auflösung der Head-Unit und streamt es über diese Sockets. Eine GLES-Letterbox-Pipeline sorgt für korrektes Seitenverhältnis unabhängig von der Telefonorientierung.\n\n
+▸ Alle Funktionen\n
+• Wi-Fi Direct + mDNS Auto-Discovery gekoppelter Head-Units\n
+• Liste gespeicherter Head-Units — ein Tippen zum erneuten Verbinden nach dem ersten QR-Scan\n
+• „Verbunden“-Splash auf der Head-Unit vor Beginn der Bildschirmfreigabe\n
+• Systemweite Querformat-Sperre, damit Maps im Querformat bleibt unabhängig von der Telefonorientierung (erfordert Modify-System-Settings)\n
+• GLES-Letterbox-Pipeline — Bild mit korrektem Seitenverhältnis und schwarzen Balken, keine Verzerrung\n
+• Behandlung der Auto-Rotation: Pipeline dreht sich, wenn sich die Quell-Telefonorientierung ändert\n
+• Bitrate / fps / GOP für Wi-Fi-P2P-Stabilität abgestimmt (4 Mbps, 30 fps, 2 s I-Frame-Intervall)\n
+• Ein-Tipp-Start von Google Maps im Querformat\n
+• Live In-App-Log für Diagnose\n
+• Mehrsprachig: English, Čeština, Slovenčina, Polski, Deutsch\n\n
+▸ Warum verlangt die App „Modify system settings“?\n
+Um die Ausrichtung des gesamten Telefons auf Querformat zu sperren — ohne sie würden sich Maps beim Drehen ins Hochformat drehen und die Head-Unit erhielte einen gedrehten Stream. Erfordert eine einmalige Genehmigung in den Systemeinstellungen (Android öffnet den Dialog beim ersten Tippen auf die Maps-Schaltfläche).\n\n
+▸ Nach dem Stoppen bleibt das Telefon im Querformat — was tun?\n
+Die Stop-Schaltfläche stellt die Auto-Rotation auf den vorherigen Wert zurück. Falls sie hängen bleibt → öffne die Schnelleinstellungen Androids und schalte die Drehsperre manuell um.\n\n
+▸ Welche Head-Unit wird unterstützt?\n
+Carbit SSDQ01-0120 (Carbit Ride Motorräder/Roller, Flavor 51, 5\"-Display 800×480). Auto-Carbit wurde nicht getestet — das Protokoll ist zu ~90% identisch, aber die RLY-Antworten können abweichen.\n\n
+▸ Bekannte Einschränkungen\n
+• Die Head-Unit meldet `supportScreenTouch=false` → Touch von der HU zurück zum Telefon wird nicht unterstützt; bediene das Telefon direkt.\n
+• OTA-Updates über die Carbit-Cloud werden nicht unterstützt — wir antworten mit isOk=false beim Handshake.\n
+• Fahrt-Statistiken (`HUDINFO`) werden mit Platzhalterwerten gesendet, nicht mit echten GPS-Daten.\n\n
+▸ Preis\n
+RidePanel ist **komplett kostenlos** und bleibt es für immer. Keine Werbung, kein Premium, keine Telemetrie, keine Analytics. Wenn dir die App geholfen hat, hilft der Kaffee-Button unten die Entwicklungszeit zu finanzieren.\n\n
+▸ Open Source &amp; Lizenz\n
+Der vollständige Quellcode ist unter der **MIT-Lizenz** veröffentlicht: jeder darf ihn nutzen, modifizieren und weiterverteilen — auch kommerziell — solange der Urheberrechtshinweis erhalten bleibt. Die MIT-Lizenz schließt jegliche Garantie explizit aus: die Software wird „WIE BESEHEN“ bereitgestellt, die Autoren haften nicht für Schäden. Durch die Nutzung von RidePanel akzeptierst du diese Bedingungen.
+    </string>
+</resources>

@@ -1,0 +1,73 @@
+<resources>
+    <string name="tab_home">Główna</string>
+    <string name="tab_logs">Logi</string>
+    <string name="tab_faq">Pomoc</string>
+
+    <string name="status_listening">Nasłuchuje na %1$s:%2$d</string>
+    <string name="btn_qr">Zeskanuj QR i połącz</string>
+    <string name="qr_idle">QR/P2P: bezczynny</string>
+    <string name="qr_status_prefix">QR/P2P: %1$s</string>
+    <string name="known_devices_label">Zapisane head-unity</string>
+    <string name="btn_known_connect">Połącz</string>
+    <string name="btn_known_connected">Połączono</string>
+    <string name="btn_known_forget">Zapomnij</string>
+    <string name="btn_start_mirror">Uruchom mirror</string>
+    <string name="btn_open_maps">Otwórz Mapy Google (poziomo)</string>
+    <string name="btn_stop_mirror">Zatrzymaj mirror</string>
+
+    <string name="logs_title">Logi</string>
+    <string name="btn_clear_logs">Wyczyść</string>
+
+    <string name="toast_write_settings_needed">RidePanel potrzebuje uprawnienia Modify-System-Settings do zablokowania orientacji poziomej — przyznaj i spróbuj ponownie</string>
+    <string name="toast_landscape_lock_failed">Nie udało się zablokować orientacji — Mapy mogą się obracać</string>
+    <string name="toast_maps_not_installed">Mapy nie są zainstalowane?</string>
+    <string name="dialog_hotspot_title">Dane hotspotu</string>
+    <string name="dialog_hotspot_message">Head-unit chce się połączyć z hotspotem telefonu.</string>
+    <string name="dialog_hotspot_ssid_hint">SSID hotspotu</string>
+    <string name="dialog_hotspot_password_hint">Hasło hotspotu</string>
+    <string name="dialog_pick_headunit_title">Wybierz head-unit</string>
+    <string name="dialog_unnamed_device">(bez nazwy)</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Anuluj</string>
+    <string name="crash_prefix">AWARIA %1$s: %2$s</string>
+
+    <string name="faq_title">Pomoc</string>
+    <string name="btn_buy_coffee">☕ Postaw mi kawę</string>
+    <string name="faq_body">
+▸ Czym jest RidePanel?\n
+Darmowa aplikacja open-source do mirroringu ekranu telefonu na motocyklowy head-unit Carbit SSDQ01 (flavor 51). Społecznościowa alternatywa dla oryginalnej aplikacji Carbit Ride bez zależności od konta w chmurze — wszystko działa lokalnie przez Wi-Fi Direct.\n\n
+▸ Jak zacząć?\n
+1. Naciśnij **górny przycisk** na lewym sterowniku przy kierownicy motocykla — na ekranie head-unitu pojawi się kod QR.\n
+2. W RidePanel naciśnij „Zeskanuj QR i połącz“ → zeskanuj QR → telefon połączy się z Wi-Fi Direct head-unitu.\n
+3. Na head-unicie pojawi się splash „połączono“ oznaczający że telefon jest sparowany.\n
+4. Naciśnij „Uruchom mirror“ (tylko udostępnianie ekranu) LUB „Otwórz Mapy Google (poziomo)“ (udostępnianie + Mapy w jednym kroku).\n
+5. Aby zakończyć: „Zatrzymaj mirror“.\n\n
+▸ Jak to działa?\n
+Aplikacja reverse-engineeruje protokół Carbit EasyConn (PXC). Wi-Fi Direct służy jako transport, mDNS discovery ogłasza head-unit, następnie PXC handshake (CLIENT_INFO / capability exchange) otwiera cztery sockety TCP (10920/10921/10922/10711–10710). Telefon koduje ekran przez MediaCodec do H.264 w natywnej rozdzielczości head-unitu 800×480 i streamuje to przez te sockety. GLES letterbox pipeline zapewnia poprawne proporcje obrazu niezależnie od orientacji telefonu.\n\n
+▸ Wszystkie funkcje\n
+• Wi-Fi Direct + mDNS auto-discovery sparowanych head-unitów\n
+• Lista zapisanych head-unitów — jedno kliknięcie do ponownego połączenia po pierwszym skanie QR\n
+• Splash „połączono“ na head-unicie przed rozpoczęciem udostępniania ekranu\n
+• Systemowa blokada orientacji poziomej, żeby Mapy zostały w landscape niezależnie od orientacji telefonu (wymaga Modify-System-Settings)\n
+• GLES letterbox pipeline — obraz z poprawnymi proporcjami i czarnymi pasami, bez rozciągania\n
+• Obsługa auto-rotacji: pipeline obraca się gdy zmienia się orientacja telefonu źródłowego\n
+• Bitrate / fps / GOP dostrojone do stabilności Wi-Fi P2P (4 Mbps, 30 fps, 2 s I-frame interval)\n
+• Jedno-klikowe uruchomienie Map Google w poziomie\n
+• Aktywny log w aplikacji do diagnostyki\n
+• Wielojęzyczność: English, Čeština, Slovenčina, Polski, Deutsch\n\n
+▸ Dlaczego aplikacja prosi o „Modify system settings“?\n
+Żeby zablokować orientację całego telefonu na poziomą — bez tego Mapy obróciłyby się do portretu po przechyleniu telefonu, a head-unit otrzymałby obrócony stream. Wymaga jednorazowego pozwolenia w ustawieniach systemowych (Android otworzy dialog po pierwszym kliknięciu w przycisk Map).\n\n
+▸ Po zatrzymaniu ekran pozostaje w poziomie, co z tym?\n
+Przycisk Stop przywraca auto-rotację do poprzedniej wartości. Jeśli się zacięło → otwórz panel szybkich ustawień Androida i przełącz rotation lock ręcznie.\n\n
+▸ Który head-unit jest wspierany?\n
+Carbit SSDQ01-0120 (Carbit Ride motocykle/skutery, flavor 51, ekran 5\" 800×480). Samochodowy Carbit nie był testowany — protokół jest w ~90% identyczny, ale odpowiedzi RLY mogą się różnić.\n\n
+▸ Znane ograniczenia\n
+• Head-unit ma `supportScreenTouch=false` → touch z HU z powrotem do telefonu nie działa, sterowanie musisz wykonywać bezpośrednio na telefonie.\n
+• OTA update przez Carbit cloud nie jest wspierany — head-unit go wymaga podczas handshake, my odpowiadamy isOk=false.\n
+• Statystyki jazdy (`HUDINFO`) wysyłane są z wartościami placeholder, nie z rzeczywistymi danymi GPS.\n\n
+▸ Cena\n
+RidePanel jest **całkowicie darmowy** i zawsze taki pozostanie. Bez reklam, bez premium, bez telemetrii, bez analityki. Jeśli aplikacja Ci pomogła, kawa poniżej wesprze czas poświęcony rozwojowi.\n\n
+▸ Open source &amp; licencja\n
+Kompletny kod źródłowy jest opublikowany na **licencji MIT**: każdy może używać, modyfikować i redystrybuować — także komercyjnie — pod warunkiem zachowania informacji o autorstwie. Licencja MIT wyraźnie nie gwarantuje funkcjonalności: oprogramowanie jest dostarczane „TAK JAK JEST“, autorzy nie ponoszą odpowiedzialności za szkody. Korzystając z RidePanel akceptujesz te warunki.
+    </string>
+</resources>

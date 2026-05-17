@@ -1,0 +1,82 @@
+# ───────────────────────────────────────────────────────────────────────
+# Android / Gradle build artifacts — must NEVER be committed. They contain
+# host-specific paths, large binary outputs, and intermediate caches that
+# are regenerated on every build.
+# ───────────────────────────────────────────────────────────────────────
+**/build/
+**/.gradle/
+**/.cxx/
+**/.externalNativeBuild/
+**/captures/
+
+# Per-machine SDK path; the team uses different SDK install locations.
+local.properties
+
+# APK / AAB outputs (built by `assembleDebug` / `bundleRelease`)
+*.apk
+*.aab
+output.json
+output-metadata.json
+
+# Keystore + signing — secrets, MUST stay out of git
+*.jks
+*.keystore
+keystore.properties
+
+# Crash dumps from app processes
+hs_err_pid*
+*.hprof
+
+# ───────────────────────────────────────────────────────────────────────
+# IDE / editor metadata
+# ───────────────────────────────────────────────────────────────────────
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# Vim / Emacs swap & backup files
+*.swp
+*.swo
+*~
+
+# ───────────────────────────────────────────────────────────────────────
+# OS junk
+# ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ───────────────────────────────────────────────────────────────────────
+# Logs / temporary working files
+# ───────────────────────────────────────────────────────────────────────
+*.log
+*.class
+*.py[cod]
+node_modules/
+dist/
+target/
+
+# Large local media that doesn't belong in source
+*.mp4
+*.mov
+*.avi
+*.flv
+*.wmv
+*.tiff
+
+# ───────────────────────────────────────────────────────────────────────
+# Project-specific
+# ───────────────────────────────────────────────────────────────────────
+# Throw-away logs + screenshots dropped here during debugging sessions.
+tmp-errory/
+
+
+tools/
+
+
+extracted/

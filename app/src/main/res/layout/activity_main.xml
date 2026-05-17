@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Portrait-first layout. The app sits in portrait orientation while the
+  user navigates 3 tabs (Home / Logs / FAQ); switches to landscape only
+  while a mirror session is actively projecting (see MainActivity
+  applyMirrorOrientation()).
+
+  Each tab content view is sized to fill the FrameLayout above the
+  bottom tab bar; visibility toggles between the three when a tab is
+  tapped. No ViewPager / BottomNavigationView dependency — keeps the
+  app's release size small and avoids Material-lib version conflicts
+  with the embedded zxing scanner.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
+
+    <!-- ─── Tab content area ────────────────────────────────────────── -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- TAB 1: HOME — status, QR, known devices, mirror controls. -->
+        <ScrollView
+            android:id="@+id/tab_content_home"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:text="@string/app_name" />
+
+                <TextView
+                    android:id="@+id/tv_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="12sp"
+                    android:textIsSelectable="true"
+                    tools:ignore="MissingPrefix" />
+
+                <Button
+                    android:id="@+id/btn_qr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/btn_qr" />
+
+                <TextView
+                    android:id="@+id/tv_qr_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textSize="12sp"
+                    android:text="@string/qr_idle"
+                    android:textIsSelectable="true" />
+
+                <TextView
+                    android:id="@+id/tv_known_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/known_devices_label"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+                <LinearLayout
+                    android:id="@+id/ll_known_devices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
+                    android:background="?android:attr/dividerVertical" />
+
+                <Button
+                    android:id="@+id/btn_start"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/btn_start_mirror" />
+
+                <Button
+                    android:id="@+id/btn_maps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/btn_open_maps" />
+
+                <Button
+                    android:id="@+id/btn_stop"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/btn_stop_mirror" />
+
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- TAB 2: LOGS — live AppLog tail with Clear button. -->
+        <LinearLayout
+            android:id="@+id/tab_content_logs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/logs_title"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+                <Button
+                    android:id="@+id/btn_clear_log"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_clear_logs" />
+            </LinearLayout>
+
+            <ScrollView
+                android:id="@+id/sv_log"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="6dp"
+                android:background="#101014"
+                android:padding="6dp">
+                <TextView
+                    android:id="@+id/tv_log"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:textColor="#E0E0E0"
+                    android:textSize="10sp"
+                    android:textIsSelectable="true" />
+            </ScrollView>
+
+        </LinearLayout>
+
+        <!-- TAB 3: FAQ — static help text. -->
+        <ScrollView
+            android:id="@+id/tab_content_faq"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:visibility="gone"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_title"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_faq"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textSize="13sp"
+                    android:lineSpacingMultiplier="1.25"
+                    android:textIsSelectable="true" />
+
+                <Button
+                    android:id="@+id/btn_buy_coffee"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="@string/btn_buy_coffee"
+                    android:backgroundTint="#FFDD00"
+                    android:textColor="#1A1A1A"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </ScrollView>
+
+    </FrameLayout>
+
+    <!-- ─── Bottom tab bar ──────────────────────────────────────────── -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/dividerVertical" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="?android:attr/colorBackground"
+        android:padding="4dp">
+
+        <ImageButton
+            android:id="@+id/tab_btn_home"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_tab_home"
+            android:contentDescription="@string/tab_home" />
+
+        <ImageButton
+            android:id="@+id/tab_btn_logs"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_tab_logs"
+            android:contentDescription="@string/tab_logs" />
+
+        <ImageButton
+            android:id="@+id/tab_btn_faq"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_tab_faq"
+            android:contentDescription="@string/tab_faq" />
+
+    </LinearLayout>
+
+</LinearLayout>
