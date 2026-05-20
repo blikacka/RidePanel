@@ -17,6 +17,9 @@ local.properties
 *.aab
 output.json
 output-metadata.json
+# Android Studio sometimes drops exploded AAB contents here when
+# inspecting a release bundle (BUNDLE-METADATA, base/, META-INF, …).
+app/release/
 
 # Keystore + signing — secrets, MUST stay out of git
 *.jks
