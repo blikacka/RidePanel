@@ -76,9 +76,10 @@ target/
 tmp-errory/
 
 
-# tools/ — committed by default. Only generated outputs ignored:
-tools/store-assets/icon-512.png
-tools/store-assets/feature-graphic-1024x500.png
-tools/store-assets/screenshots/
+# tools/ — committed by default. Generated store-assets PNGs are also
+# committed (~2 MB total) so the Play Store assets are previewable on
+# GitHub and accessible without re-running the Python generators. If
+# the scripts change in a way that meaningfully changes the output,
+# regenerate and commit the new PNGs.
 
 extracted/
