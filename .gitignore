@@ -76,7 +76,9 @@ target/
 tmp-errory/
 
 
-tools/
-
+# tools/ — committed by default. Only generated outputs ignored:
+tools/store-assets/icon-512.png
+tools/store-assets/feature-graphic-1024x500.png
+tools/store-assets/screenshots/
 
 extracted/
