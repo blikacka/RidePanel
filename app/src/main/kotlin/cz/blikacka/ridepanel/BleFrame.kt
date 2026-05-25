@@ -39,9 +39,23 @@ object BleFrame {
     const val CMD_EC_BTP_REQUEST_BUILD_NET: Byte = 80
     const val CMD_EC_BTP_NOTIFY_BUILD_NET_FINISH: Byte = 81
     const val CMD_EC_BTP_NOTIFY_AP_INFO: Byte = 82
+    /** Phone → car. Sent after VERIFY_RESULT when the INNER handshake
+     *  response (cmd 0x59) advertises `blesdk!=1 && wpn==1`. Payload is
+     *  32B phoneName (zero-padded) + 1B count + N × (4B IPv4 + 4B mask).
+     *  Mirrors `qg/d.d(EC_BTP_P2C_EXTEND_CLIENT_INFO)` in decompiled APK. */
+    const val CMD_EXTEND_CLIENT_INFO: Byte = 84
     const val CMD_HANDSHAKE_OUTER: Byte = 88
     const val CMD_HANDSHAKE_INNER: Byte = 89
     const val CMD_VERIFY_RESULT: Byte = 96.toByte()
+
+    /** Head-unit pushes this when it wants the phone to set its wall-clock.
+     *  Phone replies with the same cmd byte + 8B little-endian millis
+     *  (System.currentTimeMillis + TimeZone.rawOffset). */
+    const val CMD_SYNC_TIME: Byte = 1
+    /** Head-unit pushes this when it wants the phone's clock as a localized
+     *  string. Phone replies with cmd + UTF-8 bytes of
+     *  "dd.MM.yyyy HH:mm:ss:zzz" (max 120 B). */
+    const val CMD_QUERY_TIME: Byte = 85
 
     fun encode(cmd: Byte, payload: ByteArray): ByteArray {
         val length = payload.size + 4

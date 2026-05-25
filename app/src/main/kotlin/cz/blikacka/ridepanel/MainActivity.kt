@@ -57,6 +57,12 @@ class MainActivity : ComponentActivity() {
     @Volatile private var currentTab: Tab = Tab.HOME
     private var pairer: BlePxcPairer? = null
     private var wifiDirect: WifiDirectConnector? = null
+    /** Long-lived BLE GATT connection started after Wi-Fi handshake is up.
+     *  Lives independently from [pairer] (which is for first-time QR pairing
+     *  only). The head-unit pushes COMMAND_SYNC_TIME (0x01) / QUERY_TIME
+     *  (0x55) over BLE GATT to set its dashboard clock — without this
+     *  channel the on-screen clock stays at 00:00. */
+    private var bleTimeServer: BlePxcPairer? = null
     /** Last QR result we acted on — captured so the [wifiDirectListener] /
      *  [apCallback] success paths can persist the credentials into
      *  [knownDevices] only after the head-unit actually completed pairing. */
@@ -149,6 +155,19 @@ class MainActivity : ComponentActivity() {
     ) { grants ->
         if (grants.values.all { it }) startPairing()
         else updatePairStatus("BLE permissions denied")
+    }
+
+    /** Separate launcher for the time-sync flow — when granted, retries
+     *  [startBleTimeServer] which is fired post-Wi-Fi-connect. */
+    private val bleTimeServerPermLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { grants ->
+        if (grants.values.all { it }) {
+            AppLog.i("UI", "BLE perms granted; starting time-sync")
+            startBleTimeServer()
+        } else {
+            AppLog.w("UI", "BLE perms denied — head-unit clock won't sync")
+        }
     }
 
     private val qrLauncher = registerForActivityResult(ScanContract()) { result ->
@@ -307,6 +326,7 @@ class MainActivity : ComponentActivity() {
         AppLog.setListener(null)
         wifiDirect?.stop()
         wifiDirect = null
+        stopBleTimeServer()
         // If mirror is no longer running (user pressed stop, or HU dropped
         // the session, or system revoked the projection), make sure we
         // hand the user's auto-rotate back. Skipped while mirror is still
@@ -761,6 +781,7 @@ class MainActivity : ComponentActivity() {
                 }
                 rememberConnected()
                 startSplashMode()
+                startBleTimeServer()
                 if (autoStartMirrorOnConnect) {
                     autoStartMirrorOnConnect = false
                     startMirror()
@@ -884,12 +905,68 @@ class MainActivity : ComponentActivity() {
                 updateQrStatus("Connected — group owner $ip; starting mirror…")
                 rememberConnected()
                 startSplashMode()
+                startBleTimeServer()
                 // Chain into the mirror request (one-shot — guarded by consumed flag).
                 if (autoStartMirrorOnConnect) {
                     autoStartMirrorOnConnect = false
                     startMirror()
                 }
             }
+        }
+    }
+
+    /** Start (or restart) the BLE GATT time-sync session. Safe to call
+     *  repeatedly — repeated calls are no-ops once a server is running. If
+     *  the BLE permissions aren't granted yet (the QR flow doesn't request
+     *  them), launches a non-blocking permission prompt and retries on
+     *  grant. Should be called once the head-unit's Wi-Fi network is up. */
+    private fun startBleTimeServer() {
+        if (bleTimeServer != null) {
+            AppLog.d("UI", "BLE time-sync already started, skipping")
+            return
+        }
+        // QR pairing flow doesn't request BLUETOOTH_SCAN/CONNECT, so check
+        // here and ask the user — clock-sync is mandatory for usable HUD.
+        val needed = if (Build.VERSION.SDK_INT >= 31)
+            arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
+        else
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        val missing = needed.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+        if (missing.isNotEmpty()) {
+            AppLog.i("UI", "BLE time-sync: requesting permissions: $missing")
+            bleTimeServerPermLauncher.launch(missing.toTypedArray())
+            return
+        }
+        // Pull the known head-unit identifiers we already have at this
+        // point: Wi-Fi MAC (always known from QR / KnownDevices) plus
+        // optional HUName (filled in later by PXC CLIENT_INFO via
+        // [updateBleTimeServerHuName]). The Wi-Fi MAC's last 4 hex chars
+        // are shared by the head-unit's BT-Classic and BLE radios in this
+        // ecosystem, so they're a deterministic match key.
+        val knownMac = currentlyConnectedMac
+        AppLog.i("UI", "BLE time-sync: starting (permissions OK, knownMac=$knownMac)")
+        val server = BlePxcPairer(
+            context = this,
+            listener = bleTimeServerListener,
+            targetWifiMac = knownMac,
+            targetHuName = null,  // filled in later from PXC CLIENT_INFO
+        )
+        bleTimeServer = server
+        server.startTimeServer()
+    }
+
+    private fun stopBleTimeServer() {
+        bleTimeServer?.disconnect()
+        bleTimeServer = null
+    }
+
+    /** Minimal listener — we don't care about pairing state transitions in
+     *  the time-server flow, just log them for diagnostics. */
+    private val bleTimeServerListener = object : BlePxcPairer.Listener {
+        override fun onState(state: BlePxcPairer.State, message: String?) {
+            AppLog.i("UI", "BLE time-sync state=$state${message?.let { " — $it" } ?: ""}")
         }
     }
 

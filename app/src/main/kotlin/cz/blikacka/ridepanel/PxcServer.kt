@@ -7,6 +7,9 @@ import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.nio.charset.StandardCharsets
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
@@ -52,6 +55,16 @@ class PxcServer(
      *  can push async P2C commands (e.g. OTA FTP status 0x20280) that don't
      *  fit the standard request/response pattern. */
     @Volatile private var primaryCtrlOutput: OutputStream? = null
+
+    /** Cached from the head-unit's CLIENT_INFO. When true, the head-unit
+     *  uses our `dateTime` string from QUERY_TIME replies to drive its own
+     *  wall-clock display. Without `dateTime` the head-unit's clock stays
+     *  at 00:00 (`ih/l0.java::g()` in the decompiled APK). */
+    @Volatile private var carSupportSyncCorrectTime: Boolean = false
+    /** Cached "channel" string from the head-unit's CLIENT_INFO. Selects
+     *  the `dateTime` format: motorcycle flavors ("21312"/"21313") want
+     *  colon-separated date components, everyone else wants dot-separated. */
+    @Volatile private var carChannel: String = ""
 
     private val phoneUuid: String = run {
         val sp = context.getSharedPreferences("ridepanel", Context.MODE_PRIVATE)
@@ -288,16 +301,34 @@ class PxcServer(
         }
     }
 
-    /** Mirror of `ih/l0.java::g()` — returns time + currentTime + tz. */
+    /** Based on `ih/l0.java::g()` plus our own observation that QJMOTO-class
+     *  firmware needs the `dateTime` string even when CLIENT_INFO omits the
+     *  `supportSyncCorrectTime` flag — without it the on-screen clock stays
+     *  at 00:00. The original app sent `dateTime` only conditionally, but
+     *  unconditionally sending it is forward-compatible: head-units that
+     *  ignore the field stay unaffected. */
     private fun handleQueryTime(): ByteArray {
         val tz = java.util.TimeZone.getDefault()
+        val now = System.currentTimeMillis()
         val gmtNow = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("GMT")).timeInMillis
-        val localNow = java.util.Calendar.getInstance(tz).timeInMillis + tz.getOffset(System.currentTimeMillis())
+        val localNow = java.util.Calendar.getInstance(tz).timeInMillis + tz.getOffset(now)
+        // Motorcycle flavors (Carbit Ride channels "21312"/"21313") parse
+        // colon-separated date components; other head-units use dot-separated.
+        // Matches `ih/l0.java::g()`'s pattern selection exactly.
+        val pattern = if (carChannel == "21312" || carChannel == "21313") {
+            "dd:MM:yyyy HH:mm:ss:SSS"
+        } else {
+            "dd.MM.yyyy HH:mm:ss:SSS"
+        }
+        val dateTime = SimpleDateFormat(pattern, Locale.getDefault()).format(Date(now))
         val reply = JSONObject().apply {
             put("time", gmtNow)
             put("currentTime", localNow)
             put("currentTimeZone", tz.id)
+            put("dateTime", dateTime)
         }
+        AppLog.i(TAG, "QUERY_TIME reply: channel='$carChannel' " +
+            "supportSyncCorrectTime=$carSupportSyncCorrectTime dateTime='$dateTime' reply=$reply")
         return reply.toString().toByteArray(StandardCharsets.UTF_8)
     }
 
@@ -332,6 +363,8 @@ class PxcServer(
         val carSupportFunction = car.optInt("supportFunction", 0)
         val carSpeechEngineType = car.optInt("supportSpeechEngine", 0)
         val carPxcVersion = car.optString("pxcVersion", "1.0.2")
+        carSupportSyncCorrectTime = car.optBoolean("supportSyncCorrectTime", false)
+        carChannel = car.optString("channel", "")
 
         // Best-effort: get the phone's Bluetooth adapter name. The original
         // Carbit code uses BluetoothUtil.getBlueToothAdapterName() — a non-
